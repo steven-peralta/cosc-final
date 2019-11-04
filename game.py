@@ -1,89 +1,69 @@
-from enum import Enum
+# the state is an array with the length of 32, each value being between 0-4
+# 0 - empty space
+# 1 - black man
+# 2 - white man
+# 3 - black king
+# 4 - white king
+
+# so effectively, black pieces are always odd, white pieces are always even
+state = [0 for _ in range(32)]
 
 
-class Color(Enum):
-    WHITE = 'white'
-    BLACK = 'black'
-
-
-class Direction(Enum):
-    UP = 'up'
-    DOWN = 'down'
-    LEFT = 'left'
-    RIGHT = 'right'
-
-
-class Tile:
-    def __init__(self, x, y, piece=None):
-        self.x = x
-        self.y = y
-        self.piece = piece
-
-    def __repr__(self):
-        if (self.x + self.y) % 2 == 0:
-            return 'O'
+def new_state():
+    for i in range(32):
+        if i < 12:
+            state[i] = 1
+        elif i >= 20:
+            state[i] = 2
         else:
-            return 'X'
+            state[i] = 0
 
 
-class Piece:
-    def __init__(self, color, tile, king=False):
-        self.color = color
-        self.tile = tile
-        self.king = king
+# returns true or false depending on if the move was successful or not
+def make_move(pos, new_pos):
+    pos -= 1
+    new_pos -= 1
 
-    def __repr__(self):
-        if self.color == Color.WHITE:
-            if not self.king:
-                return '⛀'
-            else:
-                return '⛁'
-        else:
-            if not self.king:
-                return '⛂'
-            else:
-                return '⛃'
+    if state[pos] == 0:
+        print("the piece you want to move isn't in that spot")
+        return False
+
+    if state[new_pos] is not 0:
+        print("the spot you want to move to has an occupying piece")
+        return False
+
+    if state[pos] is not 0 and state[new_pos] == 0:
+        if state[pos] % 1 == 0: # black piece
+            if (new_pos )
 
 
-class Board:
-    def __init__(self):
-        self.state = [[Tile(x, y) for x in range(8)] for y in range(8)]
-        # here, we create an empty list of pointers to piece objects to be easily iterable
-        self.whites = []
-        self.blacks = []
 
-    def new_board(self):
-        self.state = [[Tile(x, y) for x in range(8)] for y in range(8)]
-        self.whites = []
-        self.blacks = []
 
-        for y in range(len(self.state)):
-            for x in range(len(self.state[y])):
-                tile = self.state[y][x]
-                if (x + y) % 2 != 0:
-                    if y <= 2:
-                        piece = Piece(Color.WHITE, tile)  # create a pointer to our object
-                        tile.piece = piece
-                        self.whites.append(piece)  # store out pointer
-                    elif y > 4:
-                        piece = Piece(Color.BLACK, tile)
-                        tile.piece = piece
-                        self.blacks.append(piece)
-
-    def print_board(self):
-        for row in self.state:
-            for tile in row:
-                if tile.piece is not None:
-                    print(tile.piece, end=', ')
+def print_board():
+    str_builder = ''
+    itr = 0
+    for row in range(8):
+        for column in range(8):
+            if row % 2 == 0:
+                if column % 2 == 0:
+                    str_builder += '-'
                 else:
-                    print(tile, end=', ')
-            print('\n', end='')
+                    str_builder += str(state[itr])
+                    itr += 1
+            else:
+                if column % 2 == 0:
+                    str_builder += str(state[itr])
+                    itr += 1
+                else:
+                    str_builder += '-'
+        str_builder += '\n'
+
+    print(str_builder)
 
 
 def start():
-    board = Board()
-    board.new_board()
-    board.print_board()
+    new_state()
+    print_board()
 
 
 start()
