@@ -14,7 +14,7 @@
 def new_state():
     state = [[-1 for _ in range(8)] for _ in range(8)]  # 2d array of 8x8
     for y in range(len(state)):
-        for x in range((y+1) % 2, len(state[y]), 2):
+        for x in range((y + 1) % 2, len(state[y]), 2):
             if y <= 2:
                 state[y][x] = 1
             elif y >= 5:
@@ -26,8 +26,31 @@ def new_state():
 
 
 def available_moves(state, pos):
+    moves = []
+    x = pos[0]
+    y = pos[1]
+    piece = state[y][x]
 
-    return tuple()
+    if piece == 1 or piece == 2:
+        y_vec = 1 if piece == 1 else -1
+        enemy = (2, 4) if piece == 1 else (1, 3)
+
+        for x_dir in range(-1, 2, 2):
+            try:
+                print("y: {} x: {}".format(y+y_vec, x+x_dir))
+                sel = state[y + y_vec][x + x_dir]
+                if sel == 0:
+                    moves.append((x + x_dir, y + y_vec))
+                elif sel in enemy:  # if there is a white piece
+                    try:
+                        if state[y + (y_vec * 2)][x + (x_dir * 2)] == 0:
+                            moves.append((x + x_dir, y + y_vec))
+                    except IndexError:
+                        pass
+            except IndexError:
+                pass
+
+    return tuple(moves)
 
 
 # returns the new state if the move was successful, returns False if it was not
@@ -35,12 +58,11 @@ def make_move(state, player, pos, new_pos):
     state = list(state)
 
 
-
 # checks the board for winning conditions after every move
 # returns 0 if no one has won yet
 # returns 1 if black player has won
 # returns 2 if white player has won
-# if
+#
 def check_board(state):
     return True
 
@@ -69,6 +91,7 @@ def start():
     current_player = False  # false is black, true is white
     history = [new_state()]
     print_board(history[-1])
+    print(available_moves(history[-1], prompt(current_player)))
     # while check_board(history[-1]):
     #    position_input = prompt(current_player)
     #    print(available_moves(history[-1], position_input[0]))
