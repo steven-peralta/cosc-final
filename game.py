@@ -100,9 +100,18 @@ def make_move(state, computer, pos, new_pos):
 
     if new_pos in available_moves(state, pos):
         if target in enemies:
+            vector = ((new_pos[0] - pos[0]) * 2, (new_pos[1] - pos[1]) * 2)
+            print(vector)
+            state[pos[1]+vector[1]][pos[0]+vector[0]] = piece
             state[new_pos[1]][new_pos[0]] = 0
-            # oh fuck we fucked something up here
-            state[new_pos[1]][new_pos[0]]
+            return tuple(state)
+        elif target == 0:
+            state[new_pos[1]][new_pos[0]] = piece
+            state[pos[1]][new_pos[0]] = 0
+            return tuple(state)
+
+    return False
+
 
 # checks the board for winning conditions after every move
 # returns 0 if no one has won yet
@@ -114,6 +123,10 @@ def check_board(state):
 
 
 def print_board(state):
+    if not state:
+        print("invalid state")
+        return
+
     str_builder = []
     for y in range(len(state)):
         string = '   ==================================================\n'
@@ -141,7 +154,7 @@ def print_board(state):
         print(row, end='')
 
 
-def prompt(player, debug=False, history=None):
+def prompt(computer, debug=False, history=None):
     if debug:
         cmd = input("Command: ").split(' ')
         if cmd[0] == 'print':
@@ -167,6 +180,12 @@ def prompt(player, debug=False, history=None):
                 if len(moves[key]) == 0:
                     continue
                 print("{} -> {}".format(key, moves[key]))
+        elif cmd[0] == 'move':
+            print_board(make_move(history[-1], computer, (int(cmd[1]), int(cmd[2])), (int(cmd[3]), int(cmd[4]))))
+        elif cmd[0] == 'playing':
+            print('computer' if computer else 'human')
+        elif cmd[0] == 'exit':
+            exit(0)
     else:
         print('not impl')
 
